@@ -1,0 +1,13 @@
+<h2>Your Order History</h2>
+<ul>
+    {% for order in orders %}
+        <li>
+            <strong>Order #{{ order.id }}</strong> - {{ order.created_at }} - ${{ order.total_price }}
+            <ul>
+                {% for item in order.orderitem_set.all %}
+                    <li>{{ item.product.name }} - Quantity: {{ item.quantity }}</li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
