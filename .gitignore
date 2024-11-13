@@ -3,3 +3,5 @@
 
 # main app
 __pycache__
+
+.env
