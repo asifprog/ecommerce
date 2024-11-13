@@ -2,8 +2,4 @@
 .vscode
 
 # main app
-shop/templates
-shop/forms.py
-shop/models.py
-shop/urls.py
-shop/views.py
+__pycache__
