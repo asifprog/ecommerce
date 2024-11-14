@@ -3,5 +3,8 @@
 
 # main app
 __pycache__
-
 .env
+.envs
+node_modules
+shop/static
+staticfiles

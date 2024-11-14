@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+node_modules
+staticfiles
+# .env
+db.sqlite3
+.envs
+shop/static
+theme/static

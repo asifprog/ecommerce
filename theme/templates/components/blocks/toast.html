@@ -1,0 +1,66 @@
+{% comment %} <div id="toast-container" class="fixed top-4 right-4 space-y-4 z-50">
+  <div
+    id="toast"
+    class="toast bg-indigo-500 text-white p-4 rounded-lg shadow-lg w-72"
+    style="display: none"
+  >
+    <div class="flex items-center">
+      <span class="material-icons mr-2">check_circle</span>
+      <span id="toast-message"></span>
+    </div>
+  </div>
+</div> {% endcomment %}
+
+<div class="max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-neutral-800 dark:border-neutral-700" role="alert" tabindex="-1" aria-labelledby="hs-toast-success-example-label">
+  <div class="flex p-4">
+      <div class="shrink-0">
+          <svg class="shrink-0 size-4 text-teal-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"></path>
+          </svg>
+      </div>
+      <div class="ms-3">
+          <p id="toast-message" class="text-sm text-gray-700 dark:text-neutral-400">
+              This is a success message.
+          </p>
+      </div>
+  </div>
+</div>
+
+<script>
+  function showToast(message, type = "success") {
+    const toastContainer = document.getElementById("toast-container");
+    const toast = document.getElementById("toast");
+    const toastMessage = document.getElementById("toast-message");
+
+    toastMessage.textContent = message;
+
+    toast.style.display = "block";
+    toast.classList.add("animate__animated", "animate__fadeInRight");
+
+    if (type === "error") {
+      toast.classList.add("bg-red-500");
+      toast.classList.remove("bg-indigo-500");
+    } else {
+      toast.classList.add("bg-indigo-500");
+      toast.classList.remove("bg-red-500");
+    }
+
+    setTimeout(() => {
+      toast.classList.add("animate__animated", "animate__fadeOutRight");
+      setTimeout(() => {
+        toast.style.display = "none";
+        toast.classList.remove("animate__fadeOutRight");
+      }, 500);
+    }, 3000);
+  }
+
+  showToast("Account successfully created!", "success");
+</script>
+
+{% if messages %}
+  <script>
+    {% for message in messages %}
+        showToast("{{ message }}");
+    {% endfor %}
+</script>
+{% endif %}
