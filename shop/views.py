@@ -58,7 +58,7 @@ def logout_view(request):
 
 
 def product_list(request):
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('id')
 
     paginator = Paginator(products, 10)
     page_number = request.GET.get('page')
