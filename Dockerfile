@@ -20,7 +20,7 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY .env .env
+# COPY .env .env
 
 COPY theme/static_src/package.json theme/static_src/package-lock.json ./theme/static_src/
 
