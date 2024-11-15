@@ -1,3 +1,4 @@
+{% load static %}
   <div
     id="mobileMenu"
     class="relative z-40 lg:hidden"
@@ -111,9 +112,9 @@
 
           <!-- Logo -->
           <div class="ml-4 flex lg:ml-0">
-            
-            <a href="{% url 'login' %}" id="closeMenuButton">
-              <span class="sr-only">Shop</span>
+            <a href="{% url 'product_list' %}">
+              <span class="sr-only">Ipswich Retail</span>
+              <img class="mx-auto h-10 w-auto" src="{% static 'logo/logo.png' %}" alt="Ipswich Retail"/>
             </a>
           </div>
 

@@ -3,11 +3,13 @@
 <html lang="en" class="h-full bg-white">
   <head>
     <title>
-      {% block title %}Shop | Welcome to and experince{% endblock %}
+      {% block title %}Ipswich Retail | Welcome to and experince{% endblock %}
     </title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'favicon/favicon.ico' %}" type="image/x-icon">
     {% tailwind_css %}
     <style>
       /* Hide the mobile menu by default */
@@ -19,8 +21,10 @@
 
   <body class="bg-gray-50 font-serif leading-normal tracking-normal h-full">
     <div class="bg-white">
-      {% include './shop/navigation.html' %}
-      {% include './components/blocks/toast.html' %}
+      {% block navigation %}
+        {% include './shop/navigation.html' %}
+      {% endblock %}
+      {% comment %} {% include './components/blocks/toast.html' %} {% endcomment %}
       {% block content %}{% endblock %}
     </div>
   </body>
