@@ -1,3 +1,8 @@
+from django.shortcuts import redirect
+from .models import Cart, Product, CartItem
+from django.shortcuts import render
+from shop.models import Product, Cart, CartItem
+from django.shortcuts import redirect, get_object_or_404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -30,6 +35,7 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'shop/register.html', {'form': form})
 
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('product_list')
@@ -41,6 +47,25 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Login in successful')
+            # Adding items to cart
+            if request.user.is_authenticated:
+                session_cart = request.session.get('cart', {})
+                if session_cart:
+                    cart, created = Cart.objects.get_or_create(user=request.user)
+
+                    for product_id, item in session_cart.items():
+                        product = get_object_or_404(Product, id=product_id)
+                        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+                        if not created:
+                            cart_item.quantity += item['quantity']
+                        else:
+                            cart_item.quantity = item['quantity']
+                        cart_item.save()
+
+                    del request.session['cart']
+
+                messages.success(request, 'Cart items migrated to your account')
             return redirect('product_list')
         else:
             messages.error(request, 'Invalid Credentials')
@@ -49,6 +74,7 @@ def login_view(request):
         form = AuthenticationForm()
         messages.error(request, 'Method failed')
     return render(request, 'shop/login.html', {'form': form})
+
 
 @login_required
 @require_POST
@@ -78,26 +104,134 @@ def product_detail(request, product_id):
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     print(f"Product Data ->: {product}")
-    cart = Cart.objects.get_or_create(user=request.user)
-    cart_item = CartItem.objects.get_or_create(
-        cart=cart, product=product)
-    messages.success(request, F'{cart_item} Added to cart')
-    cart_item.quantity += 1
-    cart_item.save()
+
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart, product=product)
+
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+        else:
+            cart_item.quantity = 1
+            cart_item.save()
+
+        messages.success(request, f'{product.name} added to cart')
+
+    else:
+        cart = request.session.get('cart', {})
+
+        if str(product_id) in cart:
+            cart[str(product_id)]['quantity'] += 1
+        else:
+            cart[str(product_id)] = {'quantity': 1, 'name': product.name}
+
+        request.session['cart'] = cart
+
+        messages.success(request, f'{product.name} added to cart (session)')
+
     return redirect('product_list')
 
 
 def remove_from_cart(request, product_id):
-    cart = Cart.objects.get(user=request.user)
-    cart_item = CartItem.objects.get(cart=cart, product__id=product_id)
-    cart_item.delete()
+    if request.user.is_authenticated:
+        cart = Cart.objects.get(user=request.user)
+
+        cart_item = CartItem.objects.filter(
+            cart=cart, product__id=product_id).first()
+
+        if cart_item:
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
+                messages.success(
+                    request, f'{cart_item.product.name} quantity decreased by 1.')
+            else:
+                cart_item.delete()
+                messages.success(
+                    request, f'{cart_item.product.name} removed from cart.')
+        else:
+            messages.error(request, 'Item not found in cart.')
+
+    else:
+        cart = request.session.get('cart', {})
+
+        if str(product_id) in cart:
+            if cart[str(product_id)]['quantity'] > 1:
+                cart[str(product_id)]['quantity'] -= 1
+                request.session['cart'] = cart
+                messages.success(
+                    request, f'{cart[str(product_id)]["name"]} quantity decreased by 1.')
+            else:
+                del cart[str(product_id)]
+                request.session['cart'] = cart
+                messages.success(
+                    request, f'{cart[str(product_id)]["name"]} removed from cart.')
+        else:
+            messages.error(request, 'Item not found in cart.')
+
     return redirect('view_cart')
 
 
 def view_cart(request):
-    cart = Cart.objects.get(user=request.user)
-    cart_items = cart.cartitem_set.all()
-    return render(request, 'shop/cart.html', {'cart_items': cart_items})
+    if request.user.is_authenticated:
+        cart = Cart.objects.get(user=request.user)
+        cart_items = cart.cartitem_set.all()
+        cart_items_with_details = [
+            {
+                'product': {
+                    'id': item.product.id,
+                    'name': item.product.name,
+                    'description': item.product.description,
+                    'price': item.product.price,
+                    'image': item.product.image,
+                    'category': item.product.category.name if item.product.category else None,
+                    'stock': item.product.stock
+                },
+                'quantity': item.quantity,
+                'subtotal': item.quantity * item.product.price
+            }
+            for item in cart_items
+        ]
+    else:
+        cart = request.session.get('cart', {})
+        cart_items_with_details = [
+            {
+                'product': {
+                    'id': Product.objects.get(id=product_id).id,
+                    'name': item['name'],
+                    'description': Product.objects.get(id=product_id).description,
+                    'price': Product.objects.get(id=product_id).price,
+                    'image': Product.objects.get(id=product_id).image,
+                    'category': Product.objects.get(id=product_id).category.name if Product.objects.get(id=product_id).category else None,
+                    'stock': Product.objects.get(id=product_id).stock
+                },
+                'quantity': item['quantity'],
+                'subtotal': item['quantity'] * Product.objects.get(id=product_id).price
+            }
+            for product_id, item in cart.items()
+        ]
+
+    total_items_in_cart = get_cart_total_items(request)
+    total_price = sum(item['subtotal'] for item in cart_items_with_details)
+
+    return render(request, 'shop/cart.html', {
+        'cart_items': cart_items_with_details,
+        'total_items_in_cart': total_items_in_cart,
+        'total_price': total_price
+    })
+
+
+def get_cart_total_items(request):
+    if request.user.is_authenticated:
+        cart = Cart.objects.get(user=request.user)
+        total_items = sum([item.quantity for item in cart.cartitem_set.all()])
+    else:
+        cart = request.session.get('cart', {})
+        total_items = sum(item['quantity'] for item in cart.values())
+
+    return total_items
 
 
 def checkout(request):
