@@ -20,7 +20,6 @@ def generate_product():
         "description": fake.sentence(),
         "price": round(random.uniform(5.99, 199.99), 2),
         "category": random.choice(categories),
-        # Random image from Lorem Picsum API (100x100 pixels)
         "image_url": f"https://picsum.photos/200/300?random={random_id}",
         "stock": random.randint(1, 100)
     }
