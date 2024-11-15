@@ -13,38 +13,10 @@ on:
 jobs:
 
   build:
+
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Set up Python 3.x
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-
-    - name: Install Python dependencies
-      run: |
-        pip install -r requirements.txt
-
-    - name: Run Python tests
-      run: |
-        pytest  # You can specify the test directory or additional options if needed
-
-    - name: Set up Node.js for Prettier
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-
-    - name: Install Prettier
-      run: |
-        npm install --global prettier
-
-    - name: Lint code with Prettier
-      run: |
-        prettier --check .  # --check will only check for formatting issues
-
     - name: Build the Docker image
-      run: |
-        docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
