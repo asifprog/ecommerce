@@ -8,4 +8,4 @@ staticfiles
 db.sqlite3
 .envs
 shop/static
-theme/static
+# theme/static
