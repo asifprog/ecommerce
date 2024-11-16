@@ -80,13 +80,7 @@ python manage.py runserver
 ```
 Access the application at [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
-Here's an updated **README.md** section detailing how to create a superuser (super admin) in Django:
-
----
-
 ## Creating a Super Admin in Django
-
-A super admin in Django has full access to the Django Admin interface, allowing them to manage models, users, and site-wide settings.
 
 1. **Create the Super Admin**
    Use the following command to create a super admin account:
