@@ -82,7 +82,7 @@ Access the application at [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
 ## To work with tailwind in the development enviroment
 
-### 1. open a new terminal tab
+### 1. Open a new terminal tab
 ```bash
 cd theme/static_src
 yarn or npm install
@@ -113,6 +113,7 @@ DB_PORT=5432
 
 # unsplash
 UNSPLASH_ACCESS_KEY='xxxxx'
+```
 
 ### 3. Automatic deployments
 - Render will automatically build and deploy the application on every push to the `main` branch using the linked GitHub repository.
@@ -215,7 +216,6 @@ Including:
 - **Metrics**: Track resource usage, including CPU, memory, and disk utilization.
 - **Alerts**: Configure alerts to notify the team if the application fails or exceeds resource limits.
 
----
 
 ## Project Structure
 
@@ -257,5 +257,3 @@ Below are some of the pendding features to implement, as well as posible future 
 
 3. **Search and Filtering**:  
    - Add advanced search and filtering options to improve user experience.
-
-## Contribution
