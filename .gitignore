@@ -9,3 +9,6 @@ node_modules
 shop/static
 staticfiles
 *.sqlite3
+migrations
+*.csv
+products.json
