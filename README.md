@@ -74,6 +74,16 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+### 7. Generate fake products
+```bash
+python manage.py generate_products
+```
+
+### 7. Seed products to SQLite database
+```bash
+python manage.py seed_products
+```
+
 ### 6. Run the development server
 ```bash
 python manage.py runserver
@@ -284,3 +294,8 @@ Below are some of the pendding features to implement, as well as posible future 
 
 3. **Search and Filtering**:  
    - Add advanced search and filtering options to improve user experience.
+
+## Notes
+
+Please note moste of the images generated are not related to the product name.
+it can be used for testing purposes as well as demonstation.
