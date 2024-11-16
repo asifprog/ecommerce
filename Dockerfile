@@ -31,6 +31,8 @@ WORKDIR /app
 COPY . .
 
 RUN python manage.py makemigrations
+# just incase
+RUN python manage.py makemigrations shop
 RUN python manage.py migrate
 
 RUN python manage.py generate_products
