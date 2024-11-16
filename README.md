@@ -80,6 +80,53 @@ python manage.py runserver
 ```
 Access the application at [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
+Here's an updated **README.md** section detailing how to create a superuser (super admin) in Django:
+
+---
+
+## Creating a Super Admin in Django
+
+A super admin in Django has full access to the Django Admin interface, allowing them to manage models, users, and site-wide settings.
+
+### Step-by-Step Guide
+
+1. **Activate the Virtual Environment**
+   Ensure your virtual environment is activated:
+   ```bash
+   source env/bin/activate
+   ```
+
+2. **Run Migrations**
+   Ensure all migrations have been applied to set up the database schema:
+   ```bash
+   python manage.py migrate
+   ```
+
+3. **Create the Super Admin**
+   Use the following command to create a super admin account:
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+4. **Provide Super Admin Details**
+   You will be prompted to input the following:
+   - **Username**: The username for the super admin (e.g., `admin`).
+   - **Email Address**: The email for the account (optional, based on settings).
+   - **Password**: Enter a strong password and confirm it.
+
+5. **Access the Admin Interface**
+   - Start the Django development server:
+     ```bash
+     python manage.py runserver
+     ```
+   - Visit the Django Admin interface at [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/).
+   - Log in using the credentials of the super admin account you just created.
+
+### Notes (please note in the following project we are utilizing django custom user model)
+- **Custom User Model**: If you've implemented a custom user model, ensure it is compatible with Django Admin by registering it in the `admin.py` file.
+- **Security Tip**: Use a strong, unique password for the super admin account, especially in production environments.
+- **Environment Variables**: For production, consider using environment variables to store sensitive credentials securely.
+
 ## To work with tailwind in the development enviroment
 
 ### 1. Open a new terminal tab
