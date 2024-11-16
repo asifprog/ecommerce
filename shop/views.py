@@ -51,11 +51,13 @@ def login_view(request):
             if request.user.is_authenticated:
                 session_cart = request.session.get('cart', {})
                 if session_cart:
-                    cart, created = Cart.objects.get_or_create(user=request.user)
+                    cart, created = Cart.objects.get_or_create(
+                        user=request.user)
 
                     for product_id, item in session_cart.items():
                         product = get_object_or_404(Product, id=product_id)
-                        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+                        cart_item, created = CartItem.objects.get_or_create(
+                            cart=cart, product=product)
 
                         if not created:
                             cart_item.quantity += item['quantity']
@@ -65,7 +67,8 @@ def login_view(request):
 
                     del request.session['cart']
 
-                messages.success(request, 'Cart items migrated to your account')
+                messages.success(
+                    request, 'Cart items migrated to your account')
             return redirect('product_list')
         else:
             messages.error(request, 'Invalid Credentials')
@@ -98,12 +101,46 @@ def product_list(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    return render(request, 'shop/product_detail.html', {'product': product})
+    
+    reviews = product.reviews.all()
+    total_reviews = reviews.count()
+    print(total_reviews)
+    average_rating = 0
+    if total_reviews > 0:
+        average_rating = sum([review.rating for review in reviews]) / total_reviews
+
+    features = [feature.strip()
+                for feature in product.features.split('\n') if feature.strip()]
+
+    total_qty_in_cart = 0
+
+    if request.user.is_authenticated:
+        try:
+            cart = Cart.objects.get(user=request.user)
+            cart_item = CartItem.objects.filter(
+                cart=cart, product=product).first()
+            if cart_item:
+                total_qty_in_cart = cart_item.quantity
+        except Cart.DoesNotExist:
+            pass  
+    else:
+        cart = request.session.get('cart', {})
+        if str(product_id) in cart:
+            total_qty_in_cart = cart[str(product_id)]['quantity']
+
+    return render(request, 'shop/product_detail.html', {
+        'product': product,
+        'features': features,
+        'total_qty_in_cart': total_qty_in_cart,
+        'average_rating': average_rating,
+        'total_reviews': total_reviews,
+        'reviews': reviews,
+        'range_5': range(1, 6)
+    })
 
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    print(f"Product Data ->: {product}")
 
     if request.user.is_authenticated:
         cart, created = Cart.objects.get_or_create(user=request.user)
@@ -130,8 +167,11 @@ def add_to_cart(request, product_id):
         request.session['cart'] = cart
 
         messages.success(request, f'{product.name} added to cart (session)')
-
-    return redirect('product_list')
+    referer = request.META.get('HTTP_REFERER', '')
+    if referer and f'/products/{product_id}/' in referer:
+        return redirect(f'/products/{product_id}/')
+    else:
+        return redirect('product_list')
 
 
 def remove_from_cart(request, product_id):
@@ -158,16 +198,17 @@ def remove_from_cart(request, product_id):
         cart = request.session.get('cart', {})
 
         if str(product_id) in cart:
+            product_name = cart[str(product_id)]["name"]
+
             if cart[str(product_id)]['quantity'] > 1:
                 cart[str(product_id)]['quantity'] -= 1
                 request.session['cart'] = cart
                 messages.success(
-                    request, f'{cart[str(product_id)]["name"]} quantity decreased by 1.')
+                    request, f'{product_name} quantity decreased by 1.')
             else:
                 del cart[str(product_id)]
                 request.session['cart'] = cart
-                messages.success(
-                    request, f'{cart[str(product_id)]["name"]} removed from cart.')
+                messages.success(request, f'{product_name} removed from cart.')
         else:
             messages.error(request, 'Item not found in cart.')
 
