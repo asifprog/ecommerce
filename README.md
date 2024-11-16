@@ -88,33 +88,19 @@ Here's an updated **README.md** section detailing how to create a superuser (sup
 
 A super admin in Django has full access to the Django Admin interface, allowing them to manage models, users, and site-wide settings.
 
-### Step-by-Step Guide
-
-1. **Activate the Virtual Environment**
-   Ensure your virtual environment is activated:
-   ```bash
-   source env/bin/activate
-   ```
-
-2. **Run Migrations**
-   Ensure all migrations have been applied to set up the database schema:
-   ```bash
-   python manage.py migrate
-   ```
-
-3. **Create the Super Admin**
+1. **Create the Super Admin**
    Use the following command to create a super admin account:
    ```bash
    python manage.py createsuperuser
    ```
 
-4. **Provide Super Admin Details**
+2. **Provide Super Admin Details**
    You will be prompted to input the following:
    - **Username**: The username for the super admin (e.g., `admin`).
    - **Email Address**: The email for the account (optional, based on settings).
    - **Password**: Enter a strong password and confirm it.
 
-5. **Access the Admin Interface**
+3. **Access the Admin Interface**
    - Start the Django development server:
      ```bash
      python manage.py runserver
